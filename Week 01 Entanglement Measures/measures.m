@@ -1,17 +1,23 @@
+% Week 01 
+% matthias.maile@kaist.ac.kr
+close all;
+clear all;
+
 % defining the states
 psi = [1; 0; 0; 1] / sqrt(2);
 rho = zeros(4,4);
 rho(1,1) = .5;
 rho(4,4) = .5;
 
-psi = psi * transpose(psi);
+psi = psi * transpose(psi); % density matrix
 
+% computing and output
 fprintf("EE(psi) = %.5f\n", EntanglementEntropy(psi));
 fprintf("EE(rho) = %.5f\n", EntanglementEntropy(rho));
 fprintf("EoF(psi) = %.5f\n", EoF(psi));
 fprintf("EoF(rho) = %.5f\n", EoF(rho));
-fprintf("LN(psi) = %.5f\n", LogratihmicNegativity(psi));
-fprintf("LN(rho) = %.5f\n", LogratihmicNegativity(rho));
+fprintf("LN(psi) = %.5f\n", LogarithmicNegativity(psi));
+fprintf("LN(rho) = %.5f\n", LogarithmicNegativity(rho));
 
 % entanglement entropy
 function S = EntanglementEntropy(rho)
@@ -26,8 +32,8 @@ function E = EoF(rho)
   E = shannon (1/2 + 1/2 * sqrt(1 - concurrence(rho)^2));
 end
 
-function LN = LogratihmicNegativity(rho)
-  [mat, res] = sqrtm(ctranspose(PartialTransposeA(rho)) * PartialTransposeA(rho));
+function LN = LogarithmicNegativity(rho)
+  [mat, ~] = sqrtm(ctranspose(PartialTransposeA(rho)) * PartialTransposeA(rho));
   LN = log2(trace(mat ));
 end
 
@@ -50,8 +56,8 @@ function C = concurrence(rho)
   sigm_y_2 = kron(sigm_y, sigm_y);
   rho_tilde = sigm_y_2 * conj(rho) * sigm_y_2;
 
-  [sqrt_rho, residual] = sqrtm(rho);
-  [R, residual] =  sqrtm(sqrt_rho * rho_tilde * sqrt_rho);
+  [sqrt_rho, ~] = sqrtm(rho); % used [x,~] so a warning gets supressed
+  [R, ~] =  sqrtm(sqrt_rho * rho_tilde * sqrt_rho);
 
   l = eigs(R);
   C = max(0, l(1) - l(2) - l(3) - l(4));
