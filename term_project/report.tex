@@ -77,16 +77,11 @@ aps,
 \date{\today}% It is always \today, today,
 %  but any date may be explicitly specified
 
-%\begin{abstract}
-%  In this final report the results of the project for the course
-% Computational Physics at KAIST get summarized, along a description of the used methods
-%  and technologies used. In the project, a low level implementation in C++ has been done, achieving
-%  fast runtime and high flexibillity. With the completed implementation the symmetric (`American`) 
-%  traffic law gets compared to the widely used asymmetric driving law regarding passing on left
-%  lanes. The simulation is based on state-of-the-art traffic models with the \textit{intelligent driver
-%  model} (IDM) for in-lane dynamics and the \textit{minimizing overal braking induced by lane changes}
-%  (MOBIL) model as a decision tree for lane changes.
-%\end{abstract}
+\begin{abstract}
+  In this project we simulated a three-level system in the context of non-adiabatic holonomic quantum
+  computing. We reproduced a few figures from an experimental paper in our own simulation. In this
+  document we provide our calculations and figures and the code is provided in a python file.
+\end{abstract}
 
 %\keywords{Suggested keywords}%Use showkeys class option if keyword
 %display desired
@@ -115,121 +110,269 @@ $\ket{0}$, $\ket{1}$ and $\ket{a}$. The structure is shown in \autoref{fig:NV-ce
   \includegraphics[width=0.45\textwidth]{media/cell_energy.png}
   \caption{Left: Schematic of the unit cell of diamond, includ-
     ing an N-V center. Right: Encoding of a qubit in the spin-triplet
-  ground state and microwave coupling conﬁguration. Both taken from original paper
-\cite{PhysRevApplied.16.024060}.}
+    ground state and microwave coupling conﬁguration. Both taken from original paper
+  \cite{PhysRevApplied.16.024060}.}
   \label{fig:NV-center}
 \end{figure}
 
-  \subsection{Holonomic Quantum Computating}
-  \label{sec:HQC}
+\subsection{Holonomic Quantum Computating}
+\label{sec:HQC}
+Holonomic quantum computing has been proposed theoretically in 1999 \cite{ZANARDI199994}.
 
-  \section{Methodology}
-  \label{sec:Methodology}
+What set holonomic quantum computing apart was the usage of geometric phases for quantum information
+processing. These geometric phases, or generalized Berry phases, are phases that arise due to
+different different trajectories in the hilbert space, in the case of two-level qubits this can be
+imagined as trajectories on the bloch sphere.
 
-  \section{Results}
-  \label{sec:Results}
+A simple example of this phase is a s qubit starting in an eigenstate of the Pauli-$z$ matrix. A
+rotation around the x-axis, followed by a rotation around the y-axis brings it back to the original
+state, but a phase factor arises. The original authors showed it in a cute figure shown in
+\autoref{fig:holonomy}.
 
-  \begin{figure}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.25\textwidth]{media/holonomic phase.png}
+  \caption{Conceptual explanation of geometric quantum operation in the Bloch
+sphere, showing the geometric phase that equals half of the
+enclosed solid angle, $\gamma_G$. Taken from the original paper.} 
+  \label{fig:holonomy}
+\end{figure}
+
+A challenge with holonomic quantum computing was the dependency on adiabatic processes, which by
+design need long run times. This can prevent a quantum advantage since these long runtimes lead to
+decoherence and loss of quantumness in the system. The authors overcame this in the grand scheme of
+non-adiabatic quantum computing (NHQC) and tried to improve it further in the paper we will refer to
+a lot in the following sections. This new, supposedly improved method is called NHQC+ which we will
+also use throughout this report.
+
+\section{Methodology}
+\label{sec:Methodology}
+The system can be described by a Rabi-inspired hamiltonian 
+\begin{align*}
+  H_1 &= \left[
+    \frac{\Omega_1(t)}{2} e^{-i\phi_1(t)} \ket{0} + \frac{\Omega_2(t)}{2} e^{-i\phi_2(t)}
+  \ket{1} \right] \bra{a} + H.c. \\
+      &= \frac{\Omega}{2} e^{-i\phi_1} \ket{b}\bra{a} + H.c.
+\end{align*}
+where
+\begin{itemize}
+  \item bright state is defined as $\ket{b} = \sin\frac{\theta}{2} \ket{0} - \cos\frac{\theta}{2}
+    e^{i\phi} \ket{1}$,
+  \item $\theta$ and $\phi$ are time independent parameters controlling the gate operation,
+  \item $\Omega = \sqrt{\Omega_1^2 + \Omega_2^2}$ is the Rabi frequency.
+\end{itemize}
+You can defined two more states
+\[
+  \ket{d} = \cos\frac{\theta}{2} \ket{0} + \sin\frac{\theta}{2} e^{i\phi} \ket{1}
+\]
+\[
+  \ket{\psi} = e^{if/2} \left[ \cos\frac{\beta}{2} e^{-i\varphi/2} \ket{b} + \sin\frac{\beta}{2}
+  e^{i\varphi/2} \ket{a} \right]
+\]
+with the time dependent parameters $f$, $\beta$ and $\varphi$. Using the von-Neumann equation for
+each projector of these states, the following system of equation arises:
+\begin{align*}
+  \dot f        &= \frac{\dot \varphi}{\cos \beta} \\
+  \dot \beta    &= \Omega \sin(\varphi + \phi_1)  \\
+  \dot \varphi  &= \Omega \cot\beta \cos(\varphi + \phi_1).
+\end{align*}
+A solution turns out to be
+\begin{align*}
+  \beta   &= \pi \sin^2\left(\frac{\pi t}{\tau} \right) \\
+  f       &= \eta \left[2\beta - \sin(2\beta) \right] \\
+  \varphi &= \eta \left[\sin(\beta) - \frac{1}{3} \sin(3\beta) \right],
+\end{align*}
+however it is not unique as other solutions are possible
+\cite{https://doi.org/10.1002/qute.202000001}.
+
+Then the phase and amplitude of the external field in the hamiltonian is given by
+\begin{align}
+  \phi_1 &= \arctan\left(\frac{\dot \beta}{\dot \varphi} \cot\beta\right) - \varphi +
+  \text{const.} \\
+  \Omega &= \frac{\dot \beta}{\sin(\varphi + \phi_1)}
+  \label{eqn:params}
+\end{align}
+
+This calculation gives as a timedependent hamiltonian in the form of a $3\times 3$ matrix, which can
+be inserted into the Schroedinger equation. The later can be integrated with numerical method, where
+we chose Euler`s method with $\Delta t = \SI{0.1}{ns}$ for simplicity. 
+
+The simulation is implemented in python with the numpy library. The code is attached and run inside
+a jupyter notebook.
+
+\section{Results}
+\label{sec:Results}
+
+\subsection{Reproducing $\Omega(t)$ and $\phi_1(t)$}
+\label{sec:ReproducingParameters}
+The main challenge was reproducing the parameters in the hamiltonian given by \autoref{eqn:params}.
+After the theoretical derivation and correct boundry conditions I was able to reproduce the Figures
+5 and 6 from the original authors. A sample of these is shown in \autoref{fig:params-own1} and
+\autoref{fig:params-own2}.
+The original work is presented in \autoref{sec:Amplitude and phase of EM-field given in the original paper}.
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-      \centering
-      \includegraphics[width=1\textwidth]{build/1-Omega.pdf}
-      \caption{$\Omega(t)$}
-      \label{fig:1-Omega}
-    \end{subfigure}
-    \,
-    \begin{subfigure}[b]{0.45\textwidth}
-      \centering
-      \includegraphics[width=1\textwidth]{build/1-phi_1.pdf}
-      \caption{$\phi_1(t)$}
-      \label{fig:1-phi_1}
-    \end{subfigure}
-    \caption{Amplitude and phase of the laser.}
-  \end{figure}
-
-
-
-  \begin{figure}
+    \includegraphics[width=1\textwidth]{build/1-Omega.pdf}
+    \caption{$\Omega(t)$}
+    \label{fig:1-Omega}
+  \end{subfigure}
+  \,
+  \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-      \centering
-      \includegraphics[width=1\textwidth]{build/2-Omega.pdf}
-      \caption{$\Omega(t)$}
-      \label{fig:1-Omega}
-    \end{subfigure}
-    \,
-    \begin{subfigure}[b]{0.45\textwidth}
-      \centering
-      \includegraphics[width=1\textwidth]{build/2-phi_1.pdf}
-      \caption{$\phi_1(t)$}
-      \label{fig:1-phi_1}
-    \end{subfigure}
-    \caption{Amplitude and phase of the laser, according to theory.}
-  \end{figure}
+    \includegraphics[width=1\textwidth]{build/1-phi_1.pdf}
+    \caption{$\phi_1(t)$}
+    \label{fig:1-phi_1}
+  \end{subfigure}
+  \caption{Amplitude and phase of the laser to produce an $X/2$ gate. Contrarry to the given plots in
+  \cite{PhysRevApplied.16.024060} we set $\eta=1$.}
+  \label{fig:params-own1}
+\end{figure}
 
-  \begin{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=0.45\textwidth]{media/Fig5ab.png}
-    \caption{Amplitude and phase of MW field used in experiments for the NHQC+ X gate.}
-  \end{figure}
-  \begin{figure}
+    \includegraphics[width=1\textwidth]{build/2-Omega.pdf}
+    \caption{$\Omega(t)$}
+    \label{fig:1-Omega}
+  \end{subfigure}
+  \,
+  \begin{subfigure}[b]{0.45\textwidth}
     \centering
-    \includegraphics[width=0.45\textwidth]{media/Fig6.png}
-    \caption{Amplitude and phase of MW field used in experiments for the NHQC+ $X$ and $X/2$ gate,
-    $\eta = 0.4$.}
-  \end{figure}
+    \includegraphics[width=1\textwidth]{build/2-phi_1.pdf}
+    \caption{$\phi_1(t)$}
+    \label{fig:1-phi_1}
+  \end{subfigure}
+  \caption{Amplitude and phase of the laser to create an $X$ gate with $\eta=1$.}
+  \label{fig:params-own2}
+\end{figure}
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.45\textwidth]{build/1-probabilities.pdf}
-    \caption{Probability of bright, dark and $a$ state under the $X/2$ gate with $\eta=1$.}
-  \end{figure}
+\subsection{Applying a holonomic X/2 gate on a bright state}
+\label{sec:Applying a holonomic gate on a bright state}
+The original authors decided to apply a $X/2$ gate on the bright state $\ket{b}$, which in this
+context is a $\ket{+}$ state. Here the geometric phase becomes visible through a phase 
+appearing when looking at the simulated final state. Since this phase is purely geometric, the
+statistics of the computational basis states is the same as with the initial state. Our result for
+the probabilities is shown in \autoref{fig:X/2}. This is inspired by a figure in the paper shown in 
+\autoref{fig:X:orig}.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{build/1-probabilities.pdf}
+  \caption{Probability of bright, dark and $a$ state under the $X/2$ gate with $\eta=1$.}
+  \label{fig:X/2}
+\end{figure}
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.45\textwidth]{media/probabilities.png}
-    \caption{Holonomic X gate on a bright state. Experimental results
-    (dots) ﬁt well with simulations (solid lines) with η = 1. Taken from the original author`s paper.}
-  \end{figure}
+\subsection{X (NOT) Gate}
+\label{sec:X (NOT) Gate}
+For universal quantum computing a NOT gate is useful, so it has also been applied in the $\{
+\ket{0}, \ket{1} \}$ basis. This gives a good tool to measure the accuracy and error resiliance of
+the method. The probability evolution is shown in \autoref{fig:X-probs}. 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{build/2-probabilities.pdf}
+  \caption{Probabilites of $\ket{0}$, $\ket{1}$ and $\ket{a}$ states when evolving a $\ket{0}$
+  state under the $X$ gate.}
+  \label{fig:X-probs}
+\end{figure}
+The error resilience can be tested by replacing the amplitude in the hamiltonian 
+\[
+  \Omega \rightarrow (1 + \alpha) \Omega
+\]
+where $\alpha$ corresponds to the error.
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.45\textwidth]{build/2-probabilities.pdf}
-    \caption{Probabilites of $\ket{0}$, $\ket{1}$ and $\ket{a}$ states when evolving a $\ket{0}$
-    state under the $X$ gate.}
-  \end{figure}
-
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.45\textwidth]{build/error.pdf}
-    \caption{Fidelity of the $X$ gate when replacing the MW amplitude $\Omega \rightarrow
-    (1+\alpha)\Omega$.}
-  \end{figure}
-
-
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.45\textwidth]{media/error.png}
-    \caption{Performance of an X gate with control errors (α) for NHQC and
-      NHQC+ schemes with initial state |0␂. Envelopes of the two
-    driving ﬁelds of NHQC are truncated Gaussian pulses. }
-  \end{figure}
-
-  \section{Conclusion}
-  \label{sec:Introduction}
-
-  \appendix
+The fidelity can be defined as the probabilty to find the system in $\ket{1}$ after the operation
+\[
+  F = 
+  \vert
+  \bra{\psi_\text{fin}}
+  \ket{0}
+  \vert^2
+\]
+the function $F(\alpha)$ is shown in \autoref{fig:fid_theory}.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\textwidth]{build/error.pdf}
+  \caption{Fidelity of the $X$ gate when replacing the MW amplitude $\Omega \rightarrow
+  (1+\alpha)\Omega$.}
+  \label{fig:fid_theory}
+\end{figure}
 
 
-  % The \nocite command causes all entries in a bibliography to be printed out
-  % whether or not they are actually referenced in the text. This is appropriate
-  % for the sample file to show the different styles of references, but authors
-  % most likely will not want to use it.
-  \nocite{*}
 
-  %\bibliography{apssamp}% Produces the bibliography via BibTeX.
-  \bibliography{lit}% Produces the bibliography via BibTeX.
+\section{Conclusion}
+\label{sec:Introduction}
+The original aim of this project, to reproduce \autoref{fig:X:orig} has been achieved, as it is
+apparent through \autoref{fig:X/2}. Afterwards, we also reproduced the error resiliant behavior of
+the NHQC+ scheme. 
 
-  \end{document}
-  %
-  % ****** End of file apssamp.tex ******
+Further time can be spent on multi qubit gates, which were left out of scope since the paper did not
+contain enough information on how this method is generalized from a single qubit case.
+
+\appendix
+
+\section{Amplitude and phase of EM-field given in the original paper}
+\label{sec:Amplitude and phase of EM-field given in the original paper}
+The authors did not provide the full equations for $\Omega$ and $\phi_1$ and instead opted to give
+some figures, which I reproduced in \autoref{sec:Results}. Their figures are shown in
+\autoref{fig:original1} and
+\autoref{fig:original2}. The visual difference come from the authors using $\eta = 0.4$ in
+\autoref{fig:original2}, eventhough for the whole experimental implementation they set $\eta=1$ since it
+is a direct tool to supress errors. 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{media/Fig5ab.png}
+  \caption{Amplitude and phase of MW field used in experiments for the NHQC+ X gate.}
+  \label{fig:original1}
+\end{figure}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{media/Fig6.png}
+  \caption{Amplitude and phase of MW field used in experiments for the NHQC+ $X/2$ and $X$ gate,
+  $\eta = 0.4$.}
+  \label{fig:original2}
+\end{figure}
+
+\section{$X/2$ gate on a bright state}
+\label{sec:$X/2$ gate}
+The probabilities during the $X/2$ operation with the bright state (here $\ket{b} = \ket{+}$) and
+theoretical curves are
+shown in \autoref{fig:X:orig}.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{media/probabilities.png}
+  \caption{Holonomic X gate on a bright state. Experimental results
+  (dots) ﬁt well with simulations (solid lines) with $\eta = 1$. Taken from the original author`s paper.}
+  \label{fig:X:orig}
+\end{figure}
+
+\section{Fidelity in the experiment}
+\label{sec:FidelityExp}
+The authors also tested the fidelity in the experiment, the results are shown in 
+\autoref{fig:fidelity_exp} where we only care about the upper/orange line since the authors compare
+their new method to an older implementation of non-adiabatic quantum computation.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{media/error.png}
+  \caption{Performance of an X gate with control errors ($\alpha$) for NHQC and
+    NHQC+ schemes with initial state $\ket{0}$. Envelopes of the two
+  driving ﬁelds of NHQC are truncated Gaussian pulses. }
+  \label{fig:fidelity_exp}
+\end{figure}
+
+% The \nocite command causes all entries in a bibliography to be printed out
+% whether or not they are actually referenced in the text. This is appropriate
+% for the sample file to show the different styles of references, but authors
+% most likely will not want to use it.
+\nocite{*}
+
+%\bibliography{apssamp}% Produces the bibliography via BibTeX.
+\bibliography{lit}% Produces the bibliography via BibTeX.
+
+\end{document}
+%
+% ****** End of file apssamp.tex ******
