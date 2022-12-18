@@ -1,0 +1,256 @@
+% This example is meant to be compiled with lualatex or xelatex
+% The theme itself also supports pdflatex
+\PassOptionsToPackage{unicode}{hyperref}
+\documentclass[aspectratio=1610, 9pt]{beamer}
+
+% Load packages you need here
+\usepackage{polyglossia}
+\setmainlanguage{english}
+
+\usepackage{csquotes}
+
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+\usepackage{hyperref}
+\usepackage{bookmark}
+
+% load the theme after all packages
+\usepackage{tikz}
+\usepackage{braket}
+
+\usetheme[
+showtotalframes, % show total number of frames in the footline
+% dark, % optional dark theme, uncomment to use
+]{tudo}
+
+% Put settings here, like
+\unimathsetup{
+  math-style=ISO,
+  bold-style=ISO,
+  nabla=upright,
+  partial=upright,
+  mathrm=sym,
+}
+
+\title{Quantum Computation on
+Solid-State Spins with Optimal Control - Term Project on Solid State Qubits}
+\author[M.~Maile]{Matthias Maile}
+\institute[TU Dortmund, KAIST]{TU Dortmund, KAIST}
+\titlegraphic{\includegraphics[width=0.23\textwidth]{media/Nitrogen-vacancy_center.png}}
+
+% extra packages
+
+% for subfigs
+\usepackage{caption}
+\usepackage{subcaption}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:Introduction}
+
+\begin{frame}{NV-Diamond}
+\begin{block}{NV-Diamond}
+  Physical system: Diamond with Nitrogen-Vacancy modification
+  \begin{itemize}
+    \item well studied imperfection of diamond
+    \item Photoluminescence: spin state of NV-center can be measured
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+   \begin{figure}
+    \centering
+    \includegraphics[height=0.5\textheight]{media/cell_energy.png}
+    \caption{Left: Schematic of the unit cell of diamond, includ-
+ing an N-V center. Right: Encoding of a qubit in the spin-triplet
+ground state and microwave coupling conﬁguration. Both taken from original paper.}
+    \label{fig:NV-center}
+  \end{figure}
+\end{frame}
+
+\section{Theoretical description}
+\label{sec:theory}
+
+\begin{frame}{}
+  \begin{block}{Hamiltonian}
+    \begin{align*}
+      H_1 &= \left[
+        \frac{\Omega_1(t)}{2} e^{-i\phi_1(t)} \ket{0} + \frac{\Omega_2(t)}{2} e^{-i\phi_2(t)}
+      \ket{1} \right] \bra{a} + H.c. \\
+          &= \frac{\Omega}{2} e^{-i\phi_1} \ket{b}\bra{a} + H.c.
+    \end{align*}
+    Where
+    \begin{itemize}
+      \item bright state $\ket{b} = \sin\frac{\theta}{2} \ket{0} - \cos\frac{\theta}{2}
+      e^{i\phi} \ket{1}$, 
+    \item $\theta$ and $\phi$ time independent parameters controlling gate operation,
+    \item $\Omega = \sqrt{\Omega_1^2 + \Omega_2^2}$ Rabi frequency
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Finding $\Omega(t)$ and $\phi_1(t)$}
+    $\Omega(t)$ and $\phi_1(t)$ are amplitude and phase of our laser, only time dependent parameters
+    in Hamiltonian.
+    \begin{block}{more parameters}
+      The authors introduce two more states
+      \[
+        \ket{d} = \cos\frac{\theta}{2} \ket{0} + \sin\frac{\theta}{2} e^{i\phi} \ket{1}
+        \qquad
+        \ket{\psi} = e^{if/2} \left[ \cos\frac{\beta}{2} e^{-i\varphi/2} \ket{b} + \sin\frac{\beta}{2} 
+          e^{i\varphi/2} \ket{a} \right]
+      \]
+      which depend on $f$, $\beta$ and $\varphi$, 
+      their respective projectors conform to the \alert{von
+      Neumann equation}.
+
+      This gives the system of equations
+      \begin{align*}
+        \dot f        &= \frac{\dot \varphi}{\cos \beta} \\
+        \dot \beta    &= \Omega \sin(\varphi + \phi_1)  \\
+        \dot \varphi  &= \Omega \cot\beta \cos(\varphi + \phi_1)
+      \end{align*}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+  The system can be solved
+  \begin{align*}
+    \beta   &= \pi \sin^2\left(\frac{\pi t}{\tau} \right) \\
+    f       &= \eta \left[2\beta - \sin(2\beta) \right] \\
+    \varphi &= \eta \left[\sin(\beta) - \frac{1}{3} \sin(3\beta) \right]
+  \end{align*}
+
+  Then 
+  \begin{align*}
+    \phi_1 &= \arctan\left(\frac{\dot \beta}{\dot \varphi} \cot\beta\right) - \varphi +
+    \text{const.} \\
+    \Omega &= \frac{\dot \beta}{\sin(\varphi + \phi_1)}
+  \end{align*}
+\end{frame}
+
+\section{Theoretical Results}
+\label{sec:Theoretical Results}
+
+\begin{frame}{$\Omega$, $\phi_1$ to create a $X/2$ gate}
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/1-Omega.pdf}
+      \caption{$\Omega(t)$}
+      \label{fig:1-Omega}
+    \end{subfigure}
+    \,
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/1-phi_1.pdf}
+      \caption{$\phi_1(t)$}
+      \label{fig:1-phi_1}
+    \end{subfigure}
+    \caption{Amplitude and phase of the laser.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{$\Omega$, $\phi_1$ to create a $X$ gate}
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/2-Omega.pdf}
+      \caption{$\Omega(t)$}
+      \label{fig:1-Omega}
+    \end{subfigure}
+    \,
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/2-phi_1.pdf}
+      \caption{$\phi_1(t)$}
+      \label{fig:1-phi_1}
+    \end{subfigure}
+    \caption{Amplitude and phase of the laser, according to theory.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Original author`s work}
+  \begin{figure}
+    \centering
+      \includegraphics[height=.35\textheight]{media/Fig5ab.png}
+      \caption{Amplitude and phase of MW field used in experiments for the NHQC+ X gate.}
+  \end{figure}
+  \begin{figure}
+    \centering
+      \includegraphics[height=.35\textheight]{media/Fig6.png}
+      \caption{Amplitude and phase of MW field used in experiments for the NHQC+ $X$ and $X/2$ gate,
+      $\eta = 0.4$.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Applying the gates on quantum states}
+  We can apply the $X/2$ gate on $\ket{b} = \ket{0} - \ket{1}$. The final state has a
+  geometric phase $\ket{\psi_\text{fin}} = i \ket{b}$.
+  \begin{figure}
+    \centering
+      \includegraphics[height=.8\textheight]{build/1-probabilities.pdf}
+      \caption{Probability of bright, dark and $a$ state under the $X/2$ gate with $\eta=1$.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Similar work from the author}
+  \begin{figure}
+    \centering
+      \includegraphics[height=.8\textheight]{media/probabilities.png}
+      \caption{Holonomic X gate on a bright state. Experimental results
+(dots) ﬁt well with simulations (solid lines) with η = 1. Taken from the original author`s paper.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{$X$ Gate}
+  \begin{figure}
+    \centering
+      \includegraphics[height=.8\textheight]{build/2-probabilities.pdf}
+      \caption{Probabilites of $\ket{0}$, $\ket{1}$ and $\ket{a}$ states when evolving a $\ket{0}$
+      state under the $X$ gate.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Error Resilience}
+  We can test how the fidelity  evolves when the amplitude of the MW field is not exact:
+  \begin{figure}
+    \centering
+      \includegraphics[height=.8\textheight]{build/error.pdf}
+      \caption{Fidelity of the $X$ gate when replacing the MW amplitude $\Omega \rightarrow
+      (1+\alpha)\Omega$.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Experimental Test}
+  \begin{figure}
+    \centering
+      \includegraphics[height=.8\textheight]{media/error.png}
+      \caption{Performance of an X gate with control errors (α) for NHQC and
+NHQC+ schemes with initial state |0␂. Envelopes of the two
+driving ﬁelds of NHQC are truncated Gaussian pulses. }
+  \end{figure}
+\end{frame}
+
+\section{Conclusion}
+\label{sec:Conclusion}
+
+\begin{frame}{Observations}
+  \begin{itemize}
+    \item The derivation of optimal parameters $\Omega$ and $\phi_1$ is feasible
+    \item Under good settings the error is low and predictable
+    \item Noise can be reduced such that the system behaves according to the theoretical
+      description
+  \end{itemize}
+\end{frame}
+
+\end{document}

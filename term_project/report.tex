@@ -1,0 +1,235 @@
+% ****** Start of file apssamp.tex ******
+%
+%   This file is part of the APS files in the REVTeX 4.2 distribution.
+%   Version 4.2a of REVTeX, December 2014
+%
+%   Copyright (c) 2014 The American Physical Society.
+%
+%   See the REVTeX 4 README file for restrictions and more information.
+%
+% TeX'ing this file requires that you have AMS-LaTeX 2.0 installed
+% as well as the rest of the prerequisites for REVTeX 4.2
+%
+% See the REVTeX 4 README file
+% It also requires running BibTeX. The commands are as follows:
+%
+%  1)  latex apssamp.tex
+%  2)  bibtex apssamp
+%  3)  latex apssamp.tex
+%  4)  latex apssamp.tex
+%
+\documentclass[%
+reprint,
+%superscriptaddress,
+%groupedaddress,
+%unsortedaddress,
+%runinaddress,
+%frontmatterverbose, 
+%preprint,
+%preprintnumbers,
+%nofootinbib,
+%nobibnotes,
+%bibnotes,
+amsmath,amssymb,
+aps,
+%pra,
+%prb,
+%rmp,
+%prstab,
+%prstper,
+%floatfix,
+]{revtex4-2}
+
+\usepackage{graphicx}% Include figure files
+\usepackage{float}
+\usepackage{dcolumn}% Align table columns on decimal point
+\usepackage{bm}% bold math
+\usepackage{hyperref}% add hypertext capabilities
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{braket}
+%\usepackage[mathlines]{lineno}% Enable numbering of text and display math
+%\linenumbers\relax % Commence numbering lines
+
+%\usepackage[showframe,%Uncomment any one of the following lines to test 
+%%scale=0.7, marginratio={1:1, 2:3}, ignoreall,% default settings
+%%text={7in,10in},centering,
+%%margin=1.5in,
+%%total={6.5in,8.75in}, top=1.2in, left=0.9in, includefoot,
+%%height=10in,a5paper,hmargin={3cm,0.8in},
+%]{geometry}
+
+%% my own packages
+\usepackage{siunitx}
+
+\begin{document}
+
+\title{Project report: Non-adiabatic holonomic quantum computation in NV-Diamond}% Force line breaks with \\
+%\thanks{I%A footnote to the article title}%
+
+\author{Matthias Maile}
+\email{matthias.maile@kaist.ac.kr}
+\affiliation{
+  Korea Advanced Institute of Science and Technology
+}
+
+\date{\today}% It is always \today, today,
+%  but any date may be explicitly specified
+
+%\begin{abstract}
+%  In this final report the results of the project for the course
+% Computational Physics at KAIST get summarized, along a description of the used methods
+%  and technologies used. In the project, a low level implementation in C++ has been done, achieving
+%  fast runtime and high flexibillity. With the completed implementation the symmetric (`American`) 
+%  traffic law gets compared to the widely used asymmetric driving law regarding passing on left
+%  lanes. The simulation is based on state-of-the-art traffic models with the \textit{intelligent driver
+%  model} (IDM) for in-lane dynamics and the \textit{minimizing overal braking induced by lane changes}
+%  (MOBIL) model as a decision tree for lane changes.
+%\end{abstract}
+
+%\keywords{Suggested keywords}%Use showkeys class option if keyword
+%display desired
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+\label{sec:Introduction}
+In this project we reproduce the theoretical part of a paper covering an experimental
+implementation of non-adiabatic holonomic quantum computing \cite{PhysRevApplied.16.024060}. 
+As a platform the group used a diamond with a nitrogen-vacancy (NV) defect. This report will give 
+introduction about the advantages of using this NV-diamond as a qubit(\autoref{sec:intr:nv-diamond})
+and holonomic quantum computing \autoref{sec:HQC}. We will explain the original methodology and our
+own implementation \autoref{sec:Methodology} and our results \autoref{sec:Results}.
+
+\subsection{Nitrogen-Vacancy Diamond}
+\label{sec:intr:nv-diamond}
+The experimental work has been done in a solid state diamond with a nitrogen-vacancy center, shownm
+in \autoref{fig:NV-center} on the left. A useful feature is the photoluminescence, through which the
+spin state can be measured. Energywise, the system can be treated as a triplet with three states
+$\ket{0}$, $\ket{1}$ and $\ket{a}$. The structure is shown in \autoref{fig:NV-center} on the right.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.45\textwidth]{media/cell_energy.png}
+  \caption{Left: Schematic of the unit cell of diamond, includ-
+    ing an N-V center. Right: Encoding of a qubit in the spin-triplet
+  ground state and microwave coupling conﬁguration. Both taken from original paper
+\cite{PhysRevApplied.16.024060}.}
+  \label{fig:NV-center}
+\end{figure}
+
+  \subsection{Holonomic Quantum Computating}
+  \label{sec:HQC}
+
+  \section{Methodology}
+  \label{sec:Methodology}
+
+  \section{Results}
+  \label{sec:Results}
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/1-Omega.pdf}
+      \caption{$\Omega(t)$}
+      \label{fig:1-Omega}
+    \end{subfigure}
+    \,
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/1-phi_1.pdf}
+      \caption{$\phi_1(t)$}
+      \label{fig:1-phi_1}
+    \end{subfigure}
+    \caption{Amplitude and phase of the laser.}
+  \end{figure}
+
+
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/2-Omega.pdf}
+      \caption{$\Omega(t)$}
+      \label{fig:1-Omega}
+    \end{subfigure}
+    \,
+    \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=1\textwidth]{build/2-phi_1.pdf}
+      \caption{$\phi_1(t)$}
+      \label{fig:1-phi_1}
+    \end{subfigure}
+    \caption{Amplitude and phase of the laser, according to theory.}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{media/Fig5ab.png}
+    \caption{Amplitude and phase of MW field used in experiments for the NHQC+ X gate.}
+  \end{figure}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{media/Fig6.png}
+    \caption{Amplitude and phase of MW field used in experiments for the NHQC+ $X$ and $X/2$ gate,
+    $\eta = 0.4$.}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{build/1-probabilities.pdf}
+    \caption{Probability of bright, dark and $a$ state under the $X/2$ gate with $\eta=1$.}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{media/probabilities.png}
+    \caption{Holonomic X gate on a bright state. Experimental results
+    (dots) ﬁt well with simulations (solid lines) with η = 1. Taken from the original author`s paper.}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{build/2-probabilities.pdf}
+    \caption{Probabilites of $\ket{0}$, $\ket{1}$ and $\ket{a}$ states when evolving a $\ket{0}$
+    state under the $X$ gate.}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{build/error.pdf}
+    \caption{Fidelity of the $X$ gate when replacing the MW amplitude $\Omega \rightarrow
+    (1+\alpha)\Omega$.}
+  \end{figure}
+
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{media/error.png}
+    \caption{Performance of an X gate with control errors (α) for NHQC and
+      NHQC+ schemes with initial state |0␂. Envelopes of the two
+    driving ﬁelds of NHQC are truncated Gaussian pulses. }
+  \end{figure}
+
+  \section{Conclusion}
+  \label{sec:Introduction}
+
+  \appendix
+
+
+  % The \nocite command causes all entries in a bibliography to be printed out
+  % whether or not they are actually referenced in the text. This is appropriate
+  % for the sample file to show the different styles of references, but authors
+  % most likely will not want to use it.
+  \nocite{*}
+
+  %\bibliography{apssamp}% Produces the bibliography via BibTeX.
+  \bibliography{lit}% Produces the bibliography via BibTeX.
+
+  \end{document}
+  %
+  % ****** End of file apssamp.tex ******
